@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "338389578121",
+    "firebase_url": "https://textreconization-e11fa.firebaseio.com",
+    "project_id": "textreconization-e11fa",
+    "storage_bucket": "textreconization-e11fa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:338389578121:android:f7784ca712e31b3da1f158",
+        "android_client_info": {
+          "package_name": "com.example.flutter_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "338389578121-bht5vtcugc8jiv97ljoi1tldg77og75f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.flutter_app",
+            "certificate_hash": "4c7a26feac50167dfd8d970257cdd687bf310db0"
+          }
+        },
+        {
+          "client_id": "338389578121-c3nlciqe4ve229k37n21tbems9v5u5mt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9x9f4E6SsCDSm3wBY4uFX6W6ucaVl1R0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "338389578121-c3nlciqe4ve229k37n21tbems9v5u5mt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
