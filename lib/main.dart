@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/image_detail.dart';
+import 'package:flutter_app/views/crop_image.dart';
+import 'package:flutter_app/views/image_detail.dart';
+import 'package:flutter_app/views/widget/views_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -34,7 +36,6 @@ class MyApp extends StatelessWidget {
 class CameraScreen extends StatefulWidget {
   @override
   _CameraScreenState createState() => _CameraScreenState();
-
 }
 
 class _CameraScreenState extends State<CameraScreen> {
@@ -109,38 +110,36 @@ class _CameraScreenState extends State<CameraScreen> {
       ),
       body: _cameraController.value.isInitialized
           ? Stack(
-        children: <Widget>[
-          CameraPreview(_cameraController),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Container(
-              alignment: Alignment.bottomCenter,
-              child: RaisedButton.icon(
-                icon: Icon(Icons.camera),
-                label: Text("Click"),
-                onPressed: () async {
-                  await _takePicture().then((String path) {
-                    if (path != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailScreen(path),
-                        ),
-                      );
-                    }
-                  });
-                },
-              ),
-            ),
-          )
-        ],
-      )
-          : Container(
-        color: Colors.black,
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
+              children: <Widget>[
+                CameraPreview(_cameraController),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Container(
+                    alignment: Alignment.bottomCenter,
+                    child: RaisedButton.icon(
+                      icon: Icon(Icons.camera),
+                      label: Text("Click"),
+                      onPressed: () async {
+                        await _takePicture().then((String path) {
+                          if (path != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CropImage(path),
+                              ),
+                            );
+                          }
+                        }).catchError((onError) {
+                          Scaffold.of(context).showSnackBar(SnackBar(
+                              content: Text("Error when taking photo")));
+                        });
+                      },
+                    ),
+                  ),
+                )
+              ],
+            )
+          : EmptyView(),
     );
   }
 }

@@ -32,6 +32,10 @@ dependencies:
   camera: ^0.5.7+4
   path_provider: ^1.6.7
   intl: ^0.16.1
+  image_crop: ^0.3.2
+  scoped_model: ^0.3.0
+  shared_preferences: any
+  photofilters: ^2.0.1
 
 dev_dependencies:
   flutter_test:
