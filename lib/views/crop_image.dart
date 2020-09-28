@@ -2,10 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/views/image_detail.dart';
+import '../views/image_detail.dart';
 import 'package:image_crop/image_crop.dart';
-import 'package:image/image.dart' as imageLib;
-import 'package:photofilters/photofilters.dart';
 
 class CropImage extends StatefulWidget {
   String imagePath;
@@ -78,12 +76,7 @@ class _CropImageState extends State<CropImage> {
                 onPressed: () async {
                   await _cropImage().then((file) {
                     file != null
-                        ? Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DetailScreen(file.path),
-                            ),
-                          )
+                        ? _handleCropImage(file)
                         : _showCroppingError();
                   }).catchError((onError) {
                     _showCroppingError();
@@ -119,5 +112,15 @@ class _CropImageState extends State<CropImage> {
 
     sample.delete();
     return file;
+  }
+
+  _handleCropImage(File file) async {
+    var isReload = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DetailScreen(file.path),
+      ),
+    );
+    if (isReload) Navigator.pop(context, true);
   }
 }

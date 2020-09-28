@@ -1,9 +1,12 @@
+import 'dart:convert';
+
+import '../model/config.dart';
+import '../model/data_models.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
-class AppPreferences{
-
+class AppPreferences {
   //------------------------------------------------------------- Preference Constants ------------------------------------------------------------
 
   // Constants for Preference-Value's data-type
@@ -14,6 +17,7 @@ class AppPreferences{
 
   // Constants for Preference-Name
   static const String PREF_IS_LOGGED_IN = "IS_LOGGED_IN";
+  static const String PREF_DATA_FILE = "DATA_NAME";
 
   //-------------------------------------------------------------------- Variables -------------------------------------------------------------------
   // Future variable to check SharedPreference Instance is ready
@@ -28,18 +32,19 @@ class AppPreferences{
   // Private variable for SharedPreferences
   SharedPreferences _preferences;
 
-
   //-------------------------------------------------------------------- Singleton ----------------------------------------------------------------------
   // Final static instance of class initialized by private constructor
   static final AppPreferences _instance = AppPreferences._internal();
+
   // Factory Constructor
-  factory AppPreferences()=> _instance;
+  factory AppPreferences() => _instance;
 
   /// AppPreference Private Internal Constructor -> AppPreference
   /// @param->_
   /// @usage-> Initialize SharedPreference object and notify when operation is complete to future variable.
-  AppPreferences._internal(){
-    _isPreferenceInstanceReady = SharedPreferences.getInstance().then((preferences)=> _preferences = preferences);
+  AppPreferences._internal() {
+    _isPreferenceInstanceReady = SharedPreferences.getInstance()
+        .then((preferences) => _preferences = preferences);
   }
 
   //------------------------------------------------------- Getter Methods -----------------------------------------------------------
@@ -51,13 +56,40 @@ class AppPreferences{
   /// Set Logged-In Method -> void
   /// @param -> @required isLoggedIn -> bool
   /// @usage -> Set value of IS_LOGGED_IN in preferences
-  void setLoggedIn({@required bool isLoggedIn}) => _setPreference(prefName: PREF_IS_LOGGED_IN, prefValue: isLoggedIn, prefType: PREF_TYPE_BOOL);
+  void setLoggedIn({@required bool isLoggedIn}) => _setPreference(
+      prefName: PREF_IS_LOGGED_IN,
+      prefValue: isLoggedIn,
+      prefType: PREF_TYPE_BOOL);
 
   /// Get Logged-In Method -> Future<bool>
   /// @param -> _
   /// @usage -> Get value of IS_LOGGED_IN from preferences
-  Future<bool> getLoggedIn() async => await _getPreference(prefName: PREF_IS_LOGGED_IN) ?? false;// Check value for NULL. If NULL provide default value as FALSE.
+  Future<bool> getLoggedIn() async =>
+      await _getPreference(prefName: PREF_IS_LOGGED_IN) ??
+      false; // Check value for NULL. If NULL provide default value as FALSE.
 
+  void setDataFile({@required DataFile dataFile}) async {
+    await isPreferenceReady;
+    var currentList = await getListDataFile();
+    currentList.add(dataFile);
+    var result = jsonEncode(currentList);
+    print("object adding $result");
+    _setPreference(
+        prefName: PREF_DATA_FILE,
+        prefValue: result,
+        prefType: PREF_TYPE_STRING);
+    print("object added");
+  }
+
+  Future<List<DataFile>> getListDataFile() async {
+    await isPreferenceReady;
+    var stringJson = _preferences.getString(PREF_DATA_FILE) ?? "";
+    if (stringJson == "") {
+      return List();
+    } else {
+      return Converter().parseDataFile(stringJson);
+    }
+  } // Check value for NULL. If NULL provide default value as FALSE.
 
   //--------------------------------------------------- Private Preference Methods ----------------------------------------------------
   /// Set Preference Method -> void
@@ -65,36 +97,42 @@ class AppPreferences{
   ///        -> @required prefValue -> dynamic
   ///        -> @required prefType -> String
   /// @usage -> This is a generalized method to set preferences with required Preference-Name(Key) with Preference-Value(Value) and Preference-Value's data-type.
-  void _setPreference ({@required String prefName,@required dynamic prefValue,@required String prefType}){
+  void _setPreference(
+      {@required String prefName,
+      @required dynamic prefValue,
+      @required String prefType}) {
     // Make switch for Preference Type i.e. Preference-Value's data-type
-    switch(prefType){
-    // prefType is bool
-      case PREF_TYPE_BOOL:{
-        _preferences.setBool(prefName, prefValue);
-        break;
-      }
-    // prefType is int
-      case PREF_TYPE_INTEGER:{
-        _preferences.setInt(prefName, prefValue);
-        break;
-      }
-    // prefType is double
-      case PREF_TYPE_DOUBLE:{
-        _preferences.setDouble(prefName, prefValue);
-        break;
-      }
-    // prefType is String
-      case PREF_TYPE_STRING:{
-        _preferences.setString(prefName, prefValue);
-        break;
-      }
+    switch (prefType) {
+      // prefType is bool
+      case PREF_TYPE_BOOL:
+        {
+          _preferences.setBool(prefName, prefValue);
+          break;
+        }
+      // prefType is int
+      case PREF_TYPE_INTEGER:
+        {
+          _preferences.setInt(prefName, prefValue);
+          break;
+        }
+      // prefType is double
+      case PREF_TYPE_DOUBLE:
+        {
+          _preferences.setDouble(prefName, prefValue);
+          break;
+        }
+      // prefType is String
+      case PREF_TYPE_STRING:
+        {
+          _preferences.setString(prefName, prefValue);
+          break;
+        }
     }
-
   }
 
   /// Get Preference Method -> Future<dynamic>
   /// @param -> @required prefName -> String
   /// @usage -> Returns Preference-Value for given Preference-Name
-  Future<dynamic> _getPreference({@required prefName}) async => _preferences.get(prefName);
-
+  Future<dynamic> _getPreference({@required prefName}) async =>
+      _preferences.get(prefName);
 }

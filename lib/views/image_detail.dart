@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
-import 'package:flutter_app/view_models/images_detail_viewmodel.dart';
-import 'package:flutter_app/views/widget/views_widget.dart';
+import 'package:flutter_app/database/app_preferences.dart';
+import 'package:flutter_app/model/data_models.dart';
+import 'package:flutter_app/views/widget/my_icon_button.dart';
+import '../view_models/images_detail_viewmodel.dart';
+import '../views/widget/views_widget.dart';
+import '../model/config.dart';
 import 'dart:io';
 import 'dart:ui';
 import 'dart:async';
-
 
 class DetailScreen extends StatefulWidget {
   final String imagePath;
@@ -17,15 +20,15 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
-  _DetailScreenState(this.path);
+  _DetailScreenState(this._imagePath);
 
-  final String path;
+  final String _imagePath;
   List<TextElement> _elements = [];
   Size _imageSize;
   String recognizedText = "Loading ...";
 
   void _initializeVision() async {
-    final File imageFile = File(path);
+    final File imageFile = File(_imagePath);
 
     if (imageFile != null) {
       await _getImageSize(imageFile);
@@ -40,17 +43,11 @@ class _DetailScreenState extends State<DetailScreen> {
     final VisionText visionText =
         await textRecognizer.processImage(visionImage);
 
-    String pattern =
-        r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$";
-    RegExp regEx = RegExp(pattern);
-
     String mailAddress = "";
     for (TextBlock block in visionText.blocks) {
       for (TextLine line in block.lines) {
-        // if (regEx.hasMatch(line.text)) {
         mailAddress += line.text + '\n';
         _elements.addAll(line.elements);
-        // }
       }
     }
 
@@ -96,62 +93,73 @@ class _DetailScreenState extends State<DetailScreen> {
         title: Text("Text recognition result"),
       ),
       body: _imageSize != null
-              ? Stack(
-                  children: <Widget>[
-                    Center(
-                      child: Container(
-                        width: double.maxFinite,
-                        color: Colors.black,
-                        child: CustomPaint(
-                          foregroundPainter:
-                              TextDetectorPainter(_imageSize, _elements),
-                          child: AspectRatio(
-                            aspectRatio: _imageSize.aspectRatio,
-                            child: Image.file(
-                              File(path),
+          ? Container(
+              color: Colors.black87,
+              child: Stack(
+                children: <Widget>[
+                  Center(
+                    child: Container(
+                      width: double.maxFinite,
+                      child: CustomPaint(
+                        foregroundPainter:
+                            TextDetectorPainter(_imageSize, _elements),
+                        child: AspectRatio(
+                          aspectRatio: _imageSize.aspectRatio,
+                          child: Image.file(
+                            File(_imagePath),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Card(
+                      elevation: 8,
+                      color: Colors.white,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: Text(
+                                "Recognized text",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Card(
-                        elevation: 8,
-                        color: Colors.white,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Row(),
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 8.0),
+                            Container(
+                              height: 60,
+                              child: SingleChildScrollView(
                                 child: Text(
-                                  "Identified emails",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  recognizedText,
                                 ),
                               ),
-                              Container(
-                                height: 60,
-                                child: SingleChildScrollView(
-                                  child: Text(
-                                    recognizedText,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                            FlatButton(
+                                minWidth: double.infinity,
+                                onPressed: () => _saveData(),
+                                child: Text("Save"))
+                          ],
                         ),
                       ),
                     ),
-                  ],
-                )
-              : EmptyView(),
+                  ),
+                ],
+              ),
+            )
+          : EmptyView(),
     );
+  }
+
+  _saveData() {
+    AppPreferences()
+        .setDataFile(dataFile: DataFile(_imagePath, recognizedText));
+    Navigator.pop(context, true);
   }
 }
