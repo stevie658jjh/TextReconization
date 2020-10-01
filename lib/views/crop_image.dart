@@ -118,7 +118,7 @@ class _CropImageState extends State<CropImage> {
     var isReload = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => DetailScreen(file.path),
+        builder: (context) => DetailScreen(file.path, null),
       ),
     );
     if (isReload) Navigator.pop(context, true);

@@ -19,6 +19,7 @@ class HomePage extends StatefulWidget {
 
 class _HomeState extends State<HomePage> {
   List<DataFile> dataList;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   _reloadData() async {
     var data = await AppPreferences().getListDataFile();
@@ -43,6 +44,7 @@ class _HomeState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Color(0xFFECEFF1),
       appBar: appBar(),
       body: SafeArea(
@@ -68,8 +70,7 @@ class _HomeState extends State<HomePage> {
     return pickedFile.path;
   }
 
-  takeImageFailed() => Scaffold.of(context)
-      .showSnackBar(SnackBar(content: Text("Please select image")));
+  takeImageFailed() => _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Please select image")));
 
   appBar() => AppBar(
         title: Text("Home"),
@@ -157,7 +158,7 @@ class _HomeState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => DetailScreen(file.path),
+        builder: (context) => DetailScreen(file.path, dataList[index]),
       ),
     );
   }

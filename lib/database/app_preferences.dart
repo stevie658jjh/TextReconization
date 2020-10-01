@@ -71,14 +71,16 @@ class AppPreferences {
   void setDataFile({@required DataFile dataFile}) async {
     await isPreferenceReady;
     var currentList = await getListDataFile();
-    currentList.add(dataFile);
-    var result = jsonEncode(currentList);
-    print("object adding $result");
-    _setPreference(
-        prefName: PREF_DATA_FILE,
-        prefValue: result,
-        prefType: PREF_TYPE_STRING);
-    print("object added");
+    if (!currentList.contains(dataFile)) {
+      currentList.add(dataFile);
+      var result = jsonEncode(currentList);
+      _setPreference(
+          prefName: PREF_DATA_FILE,
+          prefValue: result,
+          prefType: PREF_TYPE_STRING);
+      print("object added $dataFile");
+    } else
+      print("object existing");
   }
 
   Future<List<DataFile>> getListDataFile() async {
