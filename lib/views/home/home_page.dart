@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/database/app_preferences.dart';
 import 'package:flutter_app/model/data_models.dart';
 import 'package:flutter_app/views/crop_image.dart';
+import 'package:flutter_app/views/pdf_tools_page.dart';
 import 'package:flutter_app/views/widget/my_icon_button.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -70,7 +71,8 @@ class _HomeState extends State<HomePage> {
     return pickedFile.path;
   }
 
-  takeImageFailed() => _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Please select image")));
+  takeImageFailed() => _scaffoldKey.currentState
+      .showSnackBar(SnackBar(content: Text("Please select image")));
 
   appBar() => AppBar(
         title: Text("Home"),
@@ -93,7 +95,7 @@ class _HomeState extends State<HomePage> {
           myButton.expandedIconButton(
               icon: Icons.picture_as_pdf,
               text: "PDF tools",
-              function: () => {takeImageFailed()}),
+              function: () => {_openPdfTool()}),
           myButton.expandedIconButton(
               icon: Icons.text_snippet,
               text: "To Excel",
@@ -111,7 +113,8 @@ class _HomeState extends State<HomePage> {
   _emptyList() => Expanded(child: Container(child: Text("You have no data")));
 
   _listScanned() {
-    _background(File file) => Image.file(file);
+    _background(File file) =>
+        Expanded(child: Image.file(file, fit: BoxFit.fill));
     _bottomLayout(File file) => Positioned.fill(
           child: Align(
               alignment: Alignment.bottomCenter,
@@ -159,6 +162,15 @@ class _HomeState extends State<HomePage> {
       context,
       MaterialPageRoute(
         builder: (context) => DetailScreen(file.path, dataList[index]),
+      ),
+    );
+  }
+
+  _openPdfTool() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PdfTools(),
       ),
     );
   }

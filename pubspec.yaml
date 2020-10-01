@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -42,7 +42,8 @@ dependencies:
   printing: ^3.6.1
   directory_picker: ^1.0.0
   open_file: ^3.0.1
-  webview_flutter: ^1.0.0
+  my_webview:
+    path: my_webview
 
 dev_dependencies:
   flutter_test:

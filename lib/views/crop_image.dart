@@ -6,7 +6,7 @@ import '../views/image_detail.dart';
 import 'package:image_crop/image_crop.dart';
 
 class CropImage extends StatefulWidget {
-  String imagePath;
+  final String imagePath;
 
   CropImage(this.imagePath);
 
